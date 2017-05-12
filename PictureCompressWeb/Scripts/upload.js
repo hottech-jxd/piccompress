@@ -28,13 +28,9 @@ $(document).ready(function () {
     delefileurl = appPath + delefileurl;
 
 
-    //console.log("appPath =" + appPath);
-
     initSwiper();
     
     initplupload();
-
-    $("#previewcontainer").hide();
 
     initSlider();
 
@@ -53,7 +49,7 @@ function initplupload() {
         container: document.getElementById('container'),
         url: url + sessionid,
         multipart: true,
-        dragdrop : true,
+        dragdrop: true,
         drop_element : "container",
         filters: {
             max_file_size: '5mb',
@@ -61,17 +57,15 @@ function initplupload() {
                 { title: '图片文件', extensions: 'png,jpg,jpeg' }
             ]
         },
-
         init: {
 
             PostInit: function () {
                 $("#filelist").innerHTML = "";
             },
 
-            FilesAdded: function (uploader, files) {
+            FilesAdded: function (uploader, files) {               
 
                 controlfilecount(uploader,files);
-
               
             },
 
@@ -81,14 +75,13 @@ function initplupload() {
 
                 $("#" + file.id + " .file_slide_container #contentdiv .slide-wait-botton-css").text(file.percent + "% " + plupload.formatSize(file.size).toUpperCase());
               
-
             },
 
             FileUploaded: function (uploader, file, response) {
 
                 var obj = JSON.parse(response.response);
                 //console.log(obj);
-                //console.log(obj.status);
+                console.log(file);
                 if (obj.status == 8) {
                     $("#descitem").remove();
 
@@ -102,10 +95,17 @@ function initplupload() {
                     setImagePreview(obj);
 
                 } else if(obj.status==9){
-                    alert("压缩失败");
+                    layer.alert("压缩失败");
+
+                    $("#" + file.id).remove();
+                    myswiper.update();
                 }
 
                 //initSwiper();                              
+            },
+
+            Browse: function (uploader) {
+                //console.log("browse");                
             },
 
             Error: function (uploader, error) {
@@ -114,13 +114,13 @@ function initplupload() {
                 if (file) {
                     message = error.message;
                     if (error.details) message += " (" + error.details + ")";
-                    if (error.code == plupload.FILE_SIZE_ERROR) alert("文档太大" + ": " + file.name);
-                    if (error.code == plupload.FILE_EXTENSION_ERROR) alert("格式错误。允许" + ": JPEG, PNG.");
+                    if (error.code == plupload.FILE_SIZE_ERROR) layer.alert("文档太大" + ": " + file.name);
+                    if (error.code == plupload.FILE_EXTENSION_ERROR) layer.alert("格式错误。允许" + ": JPEG, PNG.");
                     file.hint = message;
                     //alert(message);
                     //$("#" + file.id).attr("class", "plupload_failed").find("a").css("display", "block").attr("title", message);
                 }
-                up.refresh();
+                uploader.refresh();
 
 
                 //console.log(" error  " + error.code + " " + error.message);
@@ -165,15 +165,12 @@ function initplupload() {
 
 function showWaiting(file) {
 
-
-
     $("#" + file.id + " .file_slide_container .slide-image-bg-css").html("");
 
     $("#" + file.id + " .file_slide_container .slide-image-bg-css").html("<div class='status_wrapper'><div class='status-icon status-uploading'></div><div class='status-text'>上传中</div></div>");
 
 
 }
-
 
 /*
 *
@@ -193,12 +190,13 @@ function controlfilecount(uploader, files) {
         addCounter--;
         var html = getfileHtml(file, null, 1);
         $("#filelist").append(html);
+
+        myswiper.update();
+
+        myswiper.slideTo(myswiper.slides.length - 1, false);
+
     });
 
- 
-
-
-    //uploader.refresh();
     uploader.start();
 }
 
@@ -215,10 +213,6 @@ function initSwiper(){
         //observeParents:true,
 
     });
-}
-
-function initSmoothZoom() {
-
 }
 
 
@@ -285,6 +279,8 @@ function apply(quantity, filename) {
 
 function resetplupload() {
 
+    $("#cleanfiles").blur();
+
     //$("#filelist").html("");
     setdesHtml();
 
@@ -337,8 +333,19 @@ function addImageHtml(file, obj) {
 
     //$("#" + file.id + " .file_slide_container #contentdiv .slide-wait-botton-css").remove();
     //$("#" + file.id + " .file_slide_container #contentdiv .slide-image-bg-css").remove();
+
+
+    //myswiper.update();
+
+    //console.log("slides count="+ myswiper.slides.length);
+
     $("#" + file.id + " .file_slide_container #contentdiv").html(html);
 
+    //myswiper.update();
+
+    //console.log("slides count=" + myswiper.slides.length);
+
+    //myswiper.slideTo(myswiper.slides.length-1 , false);
 }
 
 function getfileHtml(file , obj , isWaiting ) {
@@ -358,8 +365,7 @@ function getfileHtml(file , obj , isWaiting ) {
         var imagehtml = "<div class='slide-image-bg-css'><div onclick=getfilerequest(this) data-fileid='" + file.id + "' data-filename='" + file.name + "'  class='imagecss' style='background:url( " + obj.thumbnailpath + ") center center no-repeat;' ></div><div class='slide-compres-css' data-fileid='" + file.id + "' data-filename='" + file.name + "' onclick=getfilerequest(this)>" + obj.rate + "</div></div>";
         var bottonhtml = "<div class='slide-botton-css' onclick=downloadpic('" + obj.minpath + "')>下载</div>";
         html += slideContainer + titlehtml + closehtml + imagehtml + bottonhtml + "</div></div>";
-
-      
+             
 
     } else {
         var waithtml = "<div id='contentdiv'><div class='slide-image-bg-css'><div class='status-wrapper'><div class='status-icon status-uploading'></div><div class='status-text'>上传中</div></div></div>";
