@@ -64,7 +64,7 @@ function initplupload() {
             },
 
             FilesAdded: function (uploader, files) {               
-
+                
                 controlfilecount(uploader,files);
               
             },
@@ -83,7 +83,8 @@ function initplupload() {
                 //console.log(obj);
                 console.log(file);
                 if (obj.status == 8) {
-                    $("#descitem").remove();
+                    //$("#descitem").remove();
+
 
                     //var html = getfileHtml(file , obj , 0 );
                     //$('#filelist').append(html);
@@ -189,6 +190,9 @@ function controlfilecount(uploader, files) {
         if (addCounter <= 0 || file.status != 1) return;
         addCounter--;
         var html = getfileHtml(file, null, 1);
+
+        $("#descitem").remove();
+
         $("#filelist").append(html);
 
         myswiper.update();
@@ -225,6 +229,8 @@ function initSlider() {
    $("#configslider").on("change", function (obj) {
 
        if (applying) return;
+
+       $("#configslider").blur();
 
        var newValue= obj.value.newValue;
        //console.log("dd=" + newValue);
@@ -341,11 +347,11 @@ function addImageHtml(file, obj) {
 
     $("#" + file.id + " .file_slide_container #contentdiv").html(html);
 
-    //myswiper.update();
+    myswiper.update();
 
     //console.log("slides count=" + myswiper.slides.length);
 
-    //myswiper.slideTo(myswiper.slides.length-1 , false);
+    myswiper.slideTo(myswiper.slides.length-1 , false);
 }
 
 function getfileHtml(file , obj , isWaiting ) {
@@ -368,7 +374,8 @@ function getfileHtml(file , obj , isWaiting ) {
              
 
     } else {
-        var waithtml = "<div id='contentdiv'><div class='slide-image-bg-css'><div class='status-wrapper'><div class='status-icon status-uploading'></div><div class='status-text'>上传中</div></div></div>";
+        var waithtml = "<div id='contentdiv'><div class='slide-image-bg-css'><div class='status-wrapper'>";
+        waithtml +="<div class='status-icon status-uploading'></div><div class='status-text'>上传中</div></div></div>";
         var waithtml2 = "<div class='slide-wait-botton-css' >" + plupload.formatSize(file.size).toUpperCase() + "</div></div>";
         html += slideContainer + titlehtml + closehtml + waithtml + waithtml2 + "</div></div>";
     }
@@ -424,6 +431,8 @@ function setdesHtml() {
     var html = "<div id='descitem' class='swiper-slide slideitemempty'><div class='desctext'>把你的文件放到这里</div></div>";
 
     $("#filelist").html(html);
+
+    myswiper.update();
 }
 
 

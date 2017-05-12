@@ -280,7 +280,7 @@ namespace PictureCompressWeb.Controllers
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.UseShellExecute = false;
-            //process.ErrorDataReceived += process_ErrorDataReceived;
+            process.ErrorDataReceived += process_ErrorDataReceived;
             //process.Exited += process_Exited;
             //process.OutputDataReceived += process_OutputDataReceived;
             //process.EnableRaisingEvents = true;
